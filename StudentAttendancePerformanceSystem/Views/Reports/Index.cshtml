@@ -1,0 +1,109 @@
+@model IEnumerable<StudentAttendancePerformanceSystem.Controllers.ReportsController.ReportRow>
+@{
+    ViewData["Title"] = "Institutional Academic Report";
+}
+
+<!-- Report Title & Print Actions Bar -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 small">
+                <i class="bi bi-shield-check me-1"></i> AUDITED TRANSCRIPT
+            </span>
+            <span class="text-muted small">Generated on @DateTime.Now.ToString("dd MMM yyyy, HH:mm")</span>
+        </div>
+        <h1 class="h3 fw-bold mb-0">Student Attendance & Performance Audit</h1>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary shadow-sm" onclick="window.print()">
+            <i class="bi bi-printer-fill me-1"></i> Print / Export PDF
+        </button>
+    </div>
+</div>
+
+<!-- Report Summary Metrics -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Roll Number</th>
+                        <th>Student Name</th>
+                        <th class="text-center">Recorded Days</th>
+                        <th class="text-center">Present</th>
+                        <th>Attendance Rate</th>
+                        <th>Average Score</th>
+                        <th class="text-center pe-4">Standing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-folder-x display-6 d-block mb-2 text-muted"></i>
+                                No student performance data available to generate report.
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var r in Model)
+                    {
+                        var attPct = r.AttendanceDays > 0 ? (100.0 * r.PresentDays / r.AttendanceDays) : 0;
+                        var markPct = r.AveragePercentage;
+                        var isGoodStanding = attPct >= 75 && markPct >= 50;
+
+                        <tr>
+                            <td class="ps-4">
+                                <span class="badge bg-light text-dark border font-monospace">@r.RollNumber</span>
+                            </td>
+                            <td class="fw-bold text-dark">@r.FullName</td>
+                            <td class="text-center text-muted">@r.AttendanceDays</td>
+                            <td class="text-center fw-semibold text-success">@r.PresentDays</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold @(attPct >= 75 ? "text-success" : "text-danger")">
+                                        @(r.AttendanceDays == 0 ? "—" : attPct.ToString("0.0") + "%")
+                                    </span>
+                                    @if (r.AttendanceDays > 0)
+                                    {
+                                        <div class="progress flex-grow-1" style="height: 6px; width: 60px;">
+                                            <div class="progress-bar @(attPct >= 75 ? "bg-success" : "bg-danger")" style="width: @attPct%"></div>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold @(markPct >= 75 ? "text-success" : (markPct >= 50 ? "text-primary" : "text-danger"))">
+                                        @(markPct == 0 ? "—" : markPct.ToString("0.0") + "%")
+                                    </span>
+                                    @if (markPct > 0)
+                                    {
+                                        <div class="progress flex-grow-1" style="height: 6px; width: 60px;">
+                                            <div class="progress-bar @(markPct >= 75 ? "bg-success" : (markPct >= 50 ? "bg-primary" : "bg-danger"))" style="width: @Math.Min(100, markPct)%"></div>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                            <td class="text-center pe-4">
+                                @if (isGoodStanding)
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Qualified
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1">
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Under Review
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

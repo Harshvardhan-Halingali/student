@@ -1,0 +1,84 @@
+@model IEnumerable<ExamMark>
+@{
+    ViewData["Title"] = "Assessment Marks";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Academic Evaluations</h1>
+        <p class="text-muted small mb-0">Exam performance, score ledger, and subject marks records.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle-fill"></i> Add Exam Marks
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Student</th>
+                        <th>Subject</th>
+                        <th>Assessment</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                        <th>Exam Date</th>
+                        <th class="text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-journal-x display-6 d-block mb-2 text-muted"></i>
+                                No examination records recorded yet. Click "Add Exam Marks" above.
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var m in Model)
+                    {
+                        var pct = m.MaximumMarks > 0 ? (double)(m.MarksObtained / m.MaximumMarks * 100) : 0;
+                        var pctClass = pct >= 75 ? "text-success" : (pct >= 50 ? "text-primary" : "text-danger");
+
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">
+                                @m.Student?.FullName
+                                <div class="text-muted small font-monospace">@m.Student?.RollNumber</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">@m.Subject</span>
+                            </td>
+                            <td class="text-muted fw-semibold">@m.ExamName</td>
+                            <td>
+                                <span class="fw-bold">@m.MarksObtained.ToString("0.##")</span>
+                                <span class="text-muted small">/ @m.MaximumMarks.ToString("0.##")</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-bold @pctClass">@pct.ToString("0.0")%</span>
+                                    <div class="progress flex-grow-1" style="height: 6px; width: 60px;">
+                                        <div class="progress-bar @(pct >= 75 ? "bg-success" : (pct >= 50 ? "bg-primary" : "bg-danger"))" style="width: @Math.Min(100, pct)%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-muted small">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                @m.ExamDate.ToString("dd MMM yyyy")
+                            </td>
+                            <td class="text-end pe-4">
+                                <form asp-action="Delete" asp-route-id="@m.Id" method="post" class="d-inline" onsubmit="return confirm('Delete this examination score?');">
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete Score">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

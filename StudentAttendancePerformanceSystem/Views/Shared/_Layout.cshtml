@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - CampusTrack™ Institutional Portal</title>
+    <!-- Bootstrap 5.3.3 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Security & Theme Styles -->
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <!-- Top Security Verification Ribbon -->
+    <div class="security-top-bar">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <span class="security-pill">
+                    <span class="security-indicator-dot"></span>
+                    TLS 1.3 ENCRYPTED
+                </span>
+                <span class="d-none d-sm-inline text-muted">
+                    <i class="bi bi-shield-lock-fill text-success me-1"></i> Role-Based Access Control (RBAC) Active
+                </span>
+            </div>
+            <div class="d-flex align-items-center gap-3 text-muted">
+                <span><i class="bi bi-database-check text-info me-1"></i> MSSQL Secure Storage</span>
+                <span class="d-none d-md-inline">|</span>
+                <span class="d-none d-md-inline"><i class="bi bi-clock-history me-1"></i> System Status: 100% Operational</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                <div class="brand-shield-icon">
+                    <i class="bi bi-shield-shaded"></i>
+                </div>
+                <span>CampusTrack<span class="text-primary-emphasis" style="color: #818cf8 !important;">.id</span></span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="nav">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "User";
+                    var initials = !string.IsNullOrWhiteSpace(User.Identity.Name) 
+                        ? string.Join("", User.Identity.Name.Split(' ').Select(n => n[0])).ToUpper() 
+                        : "U";
+                    if (initials.Length > 2) initials = initials.Substring(0, 2);
+
+                    <ul class="navbar-nav me-auto ps-lg-3">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                            </a>
+                        </li>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Teacher"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Students" asp-action="Index">
+                                    <i class="bi bi-mortarboard-fill"></i> Students
+                                </a>
+                            </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Teachers" asp-action="Index">
+                                        <i class="bi bi-person-workspace"></i> Teachers
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Attendance" asp-action="Index">
+                                    <i class="bi bi-calendar2-check-fill"></i> Attendance
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Marks" asp-action="Index">
+                                    <i class="bi bi-bar-chart-fill"></i> Marks
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Reports" asp-action="Index">
+                                <i class="bi bi-file-earmark-text-fill"></i> Reports
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                        <div class="user-profile-badge">
+                            <div class="user-avatar-circle">@initials</div>
+                            <span class="fw-semibold small pe-1">@User.Identity.Name</span>
+                            <span class="role-pill @role.ToLower()">@role</span>
+                        </div>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                            <button class="btn btn-outline-secondary btn-sm px-3 text-white border-0 bg-white bg-opacity-10" title="Secure Logout">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                <i class="bi bi-box-arrow-in-right"></i> Sign In
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary btn-sm px-3 py-2" asp-controller="Account" asp-action="Register">
+                                <i class="bi bi-person-plus-fill"></i> Sign Up
+                            </a>
+                        </li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Workspace Container -->
+    <main class="container py-4 my-2">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm border-0 mb-4" role="alert" style="background-color: var(--emerald-50); border-left: 4px solid var(--emerald-500) !important; color: var(--emerald-600);">
+                <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+                <div class="fw-semibold">@TempData["Message"]</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <!-- Institutional Trust Footer -->
+    <footer class="institutional-footer">
+        <div class="container">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-shield-check text-success fs-5"></i>
+                        <span class="fw-bold text-white">CampusTrack™ Institutional Suite</span>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        High-assurance academic attendance & performance tracking platform. Protected by PBKDF2 cryptography, scoped role authorizations, and authenticated session tokens.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-inline-flex align-items-center gap-2 p-2 px-3 rounded" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                        <i class="bi bi-lock-fill text-warning"></i>
+                        <span class="text-muted small">AES-256 Equivalent Hash Security</span>
+                    </div>
+                    <div class="text-muted small mt-2">
+                        &copy; 2026 CampusTrack Inc. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

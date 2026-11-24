@@ -1,0 +1,72 @@
+@model AttendanceRecord
+@{
+    ViewData["Title"] = "Record Attendance";
+}
+
+<div class="row justify-content-center py-2">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="p-3 rounded-circle bg-info bg-opacity-10 text-info fs-4">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="h4 fw-bold mb-1">Record Attendance</h2>
+                        <p class="text-muted small mb-0">Log student presence for institutional tracking</p>
+                    </div>
+                </div>
+
+                <form method="post">
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person-fill text-muted me-1"></i> Select Student
+                        </label>
+                        <select asp-for="StudentId" class="form-select" required>
+                            <option value="">-- Choose student from roster --</option>
+                            @foreach (Student s in ViewBag.Students)
+                            {
+                                <option value="@s.Id">@s.RollNumber — @s.FullName (@s.Course)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AttendanceDate" class="form-label">
+                                <i class="bi bi-calendar-date text-muted me-1"></i> Date
+                            </label>
+                            <input asp-for="AttendanceDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label">
+                                <i class="bi bi-check2-circle text-muted me-1"></i> Status
+                            </label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Late">Late</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Remarks" class="form-label">
+                            <i class="bi bi-chat-left-text text-muted me-1"></i> Remarks (Optional)
+                        </label>
+                        <input asp-for="Remarks" class="form-control" placeholder="e.g. Excused medical leave" />
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary px-4 fw-semibold shadow-sm">
+                            <i class="bi bi-check2-circle me-1"></i> Submit Attendance
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

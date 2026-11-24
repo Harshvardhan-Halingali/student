@@ -1,0 +1,15 @@
+## Build and output directories
+bin/
+obj/
+out/
+
+## Visual Studio & VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userprefs
+
+## Temporary & Logs
+*.log
+*.tmp

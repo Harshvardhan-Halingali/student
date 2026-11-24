@@ -1,0 +1,75 @@
+@model Student
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Enroll Student" : "Modify Student Record";
+}
+
+<div class="row justify-content-center py-2">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="p-3 rounded-circle bg-primary bg-opacity-10 text-primary fs-4">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="h4 fw-bold mb-1">@ViewData["Title"]</h2>
+                        <p class="text-muted small mb-0">Record and verify institutional student registry details</p>
+                    </div>
+                </div>
+
+                <form method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="RollNumber" class="form-label">
+                            <i class="bi bi-hash text-muted me-1"></i> Institutional Roll Number
+                        </label>
+                        <input asp-for="RollNumber" class="form-control font-monospace" placeholder="e.g. STU101" required />
+                        <span asp-validation-for="RollNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label">
+                            <i class="bi bi-person text-muted me-1"></i> Full Name
+                        </label>
+                        <input asp-for="FullName" class="form-control" placeholder="e.g. Maya Lin" required />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">
+                            <i class="bi bi-envelope text-muted me-1"></i> Student Email
+                        </label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="student@campus.local" required />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-7 mb-3">
+                            <label asp-for="Course" class="form-label">
+                                <i class="bi bi-book text-muted me-1"></i> Degree / Program
+                            </label>
+                            <input asp-for="Course" class="form-control" placeholder="e.g. Computer Science (B.Tech)" />
+                            <span asp-validation-for="Course" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label asp-for="Year" class="form-label">
+                                <i class="bi bi-calendar-event text-muted me-1"></i> Year
+                            </label>
+                            <input asp-for="Year" type="number" min="1" max="6" class="form-control" />
+                            <span asp-validation-for="Year" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-primary px-4 fw-semibold shadow-sm">
+                            <i class="bi bi-check2-circle me-1"></i> Save Student Record
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
